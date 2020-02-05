@@ -114,7 +114,9 @@ def logout():
     """Handle logout of user."""
 
     do_logout()
-    return redirect("/")
+    flash('You have successfully logged out!', 'success')
+
+    return redirect("/login")
 
 
 ##############################################################################
@@ -189,6 +191,7 @@ def add_follow(follow_id):
     followed_user = User.query.get_or_404(follow_id)
     g.user.following.append(followed_user)
     db.session.commit()
+    breakpoint()
 
     return redirect(f"/users/{g.user.id}/following")
 
@@ -213,6 +216,8 @@ def profile():
     """Update profile for current user."""
 
     # IMPLEMENT THIS
+    # make form class, html template, grab current user put in form (obj=user)
+    # validate on submit, otherwise render template
 
 
 @app.route('/users/delete', methods=["POST"])
