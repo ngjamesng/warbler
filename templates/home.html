@@ -52,11 +52,11 @@
           <p>
             {% if g.user.has_liked(msg) %}
             <form method="POST" action="/messages/{{ msg.id }}/unlike">
-              <button><i class="fas fa-star"></i></button>
+              <button class="like"><i class="fas fa-star"></i></button>
             </form>
             {% else %}
             <form method="POST" action="/messages/{{ msg.id }}/like">
-              <button><i class="far fa-star"></i></button>
+              <button class="like"><i class="far fa-star"></i></button>
             </form>
             {% endif %}
           </p>

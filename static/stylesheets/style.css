@@ -20,6 +20,13 @@ body.error-404 {
   cursor: pointer;
 }
 
+button.like {
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
 /* ======================= Nav */
 
 .navbar {
