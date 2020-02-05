@@ -113,7 +113,8 @@ def login():
 def logout():
     """Handle logout of user."""
 
-    # IMPLEMENT THIS
+    do_logout()
+    return redirect("/")
 
 
 ##############################################################################
