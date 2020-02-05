@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
-from forms import UserAddForm, LoginForm, MessageForm
+from forms import UserAddForm, LoginForm, MessageForm, UserUpdateForm
 from models import db, connect_db, User, Message
 
 CURR_USER_KEY = "curr_user"
@@ -218,6 +218,32 @@ def profile():
     # IMPLEMENT THIS
     # make form class, html template, grab current user put in form (obj=user)
     # validate on submit, otherwise render template
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    form = UserUpdateForm(obj=g.user)
+
+    if form.validate_on_submit():
+        if User.authenticate(g.user.username, form.password.data):
+            g.user.username = form.username.data
+            g.user.email = form.email.data
+            g.user.image_url = form.image_url.data
+            g.user.header_image_url = form.header_image_url.data
+            g.user.bio = form.bio.data
+
+            db.session.commit()
+            flash("Successfully updated your profile!", "success")
+
+            return redirect(f"/users/{g.user.id}")
+
+        else:
+            flash("Incorrect password.", "danger")
+
+    return render_template("users/edit.html", form=form, user=g.user)
+
+
 
 
 @app.route('/users/delete', methods=["POST"])
