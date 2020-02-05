@@ -191,7 +191,6 @@ def add_follow(follow_id):
     followed_user = User.query.get_or_404(follow_id)
     g.user.following.append(followed_user)
     db.session.commit()
-    breakpoint()
 
     return redirect(f"/users/{g.user.id}/following")
 
@@ -214,10 +213,6 @@ def stop_following(follow_id):
 @app.route('/users/profile', methods=["GET", "POST"])
 def profile():
     """Update profile for current user."""
-
-    # IMPLEMENT THIS
-    # make form class, html template, grab current user put in form (obj=user)
-    # validate on submit, otherwise render template
 
     if not g.user:
         flash("Access unauthorized.", "danger")
@@ -242,8 +237,6 @@ def profile():
             flash("Incorrect password.", "danger")
 
     return render_template("users/edit.html", form=form, user=g.user)
-
-
 
 
 @app.route('/users/delete', methods=["POST"])
@@ -327,9 +320,9 @@ def homepage():
         followed_ids = [f.id for f in g.user.following]
         messages = (Message
                     .query
-                    .filter((Message.user_id == g.user.id) | 
+                    .filter((Message.user_id == g.user.id) |
                             (Message.user_id.in_(followed_ids))
-                    )
+                            )
                     .order_by(Message.timestamp.desc())
                     .limit(100)
                     .all())
