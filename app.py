@@ -155,6 +155,15 @@ def users_show(user_id):
                 .all())
     return render_template('users/show.html', user=user, messages=messages)
 
+@app.route('/users/<int:user_id>/likes')
+def show_likes(user_id):
+    """show user's liked messages"""
+
+    user = User.query.get_or_404(user_id)
+    messages = user.likes
+
+    return render_template('users/show.html', user=user, messages=messages)
+
 
 @app.route('/users/<int:user_id>/following')
 def show_following(user_id):
@@ -226,6 +235,7 @@ def profile():
             g.user.email = form.email.data
             g.user.image_url = form.image_url.data
             g.user.header_image_url = form.header_image_url.data
+            g.user.location = form.location.data
             g.user.bio = form.bio.data
 
             db.session.commit()
