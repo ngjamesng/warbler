@@ -273,6 +273,11 @@ nav + .container {
   z-index: 2;
 }
 
+#messages .list-group-item form:not(.message-link) {
+  position: relative;
+  z-index: 2;
+}
+
 #messages .list-group-item {
   display: flex;
   align-items: flex-start;

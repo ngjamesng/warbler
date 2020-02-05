@@ -304,6 +304,21 @@ def messages_destroy(message_id):
     return redirect(f"/users/{g.user.id}")
 
 
+@app.route('/messages/<int:message_id>/like', methods=['POST'])
+def messages_like(message_id):
+    """Like a message"""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    liked_msg = Message.query.get_or_404(message_id)
+    g.user.likes.append(liked_msg)
+    db.session.commit()
+
+    return redirect(request.referrer)
+
+
 ##############################################################################
 # Homepage and error pages
 
