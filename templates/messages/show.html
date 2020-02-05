@@ -33,6 +33,21 @@
             </div>
             <p class="single-message">{{ message.text }}</p>
             <span class="text-muted">{{ message.timestamp.strftime('%d %B %Y') }}</span>
+            
+            {% if g.user.id != message.user.id %}
+            <p>
+              {% if g.user.has_liked(message) %}
+              <form method="POST" action="/messages/{{ message.id }}/unlike">
+                <button class="like"><i class="fas fa-star"></i></button>
+              </form>
+              {% else %}
+              <form method="POST" action="/messages/{{ message.id }}/like">
+                <button class="like"><i class="far fa-star"></i></button>
+              </form>
+              {% endif %}
+            </p>
+            {% endif %}
+
           </div>
         </li>
       </ul>
