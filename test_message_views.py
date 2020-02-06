@@ -22,6 +22,10 @@ os.environ['DATABASE_URL'] = "postgresql:///warbler-test"
 
 from app import app, CURR_USER_KEY
 
+# TURN OFF DEBUG TOOLBAR 
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+
+
 # Create our tables (we do this here, so we only create the tables
 # once for all tests --- in each test, we'll delete the data
 # and create fresh new clean test data
@@ -51,6 +55,11 @@ class MessageViewTestCase(TestCase):
 
         db.session.commit()
 
+    def tearDown(self):
+        """Clean up fouled transactions"""
+        db.session.rollback()
+
+
     def test_add_message(self):
         """Can use add a message?"""
 
@@ -71,3 +80,4 @@ class MessageViewTestCase(TestCase):
 
             msg = Message.query.one()
             self.assertEqual(msg.text, "Hello")
+

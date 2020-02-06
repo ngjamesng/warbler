@@ -308,6 +308,7 @@ def messages_destroy(message_id):
         return redirect("/")
 
     msg = Message.query.get(message_id)
+    # TODO check if msg owner == g.user
     db.session.delete(msg)
     db.session.commit()
 
@@ -322,6 +323,7 @@ def messages_like(message_id):
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
+    # TODO check if like owner == g.user
     liked_msg = Message.query.get_or_404(message_id)
     g.user.likes.append(liked_msg)
     db.session.commit()
@@ -337,6 +339,7 @@ def messages_unlike(message_id):
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
+    # TODO check if msg owner == g.user
     liked_msg = Message.query.get_or_404(message_id)
     g.user.likes.remove(liked_msg)
     db.session.commit()

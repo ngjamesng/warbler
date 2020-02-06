@@ -7,7 +7,8 @@
 
 import os
 from unittest import TestCase
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, DataError
+from psycopg2.errors import StringDataRightTruncation
 
 from models import db, User, Message, Follows
 
@@ -68,11 +69,58 @@ class MessageModelTestCase(TestCase):
 
     def test_message_model(self):
         """Does basic model work as expected?"""
+
+        user = User.query.filter_by(username="TESTUSERNAME").first()
         m = Message(
             text="This is a test.",
-            user_id=self.user.id
+            user_id=user.id
         )
         db.session.add(m)
         db.session.commit()
 
-        self.assertEqual(len(m.user), 1)
+        self.assertIsInstance(m.user, User)
+        self.assertIsInstance(m, Message)
+
+
+    def test_message_too_long(self):
+        """Do we get an error if our message is too long?"""
+        with self.client as client:
+            
+            user = User.query.filter_by(username="TESTUSERNAME").first()
+
+            with self.assertRaises(DataError):
+                m = Message(
+                    text= str("s"*150),
+                    user_id=user.id
+                )
+                db.session.add(m)
+                db.session.commit()
+
+    def test_message_invalid_user(self):
+        """Do we get an error if a user doesn't exist? """
+        with self.client as client:
+
+            with self.assertRaises(IntegrityError):
+                m = Message(
+                    text="This is a test.",
+                    # user_id -1 will never be generated, thus invalid user
+                    user_id= -1
+                )
+                db.session.add(m)
+                db.session.commit()
+
+    def test_message_del_on_cascade(self):
+        """Does the message delete if the user is deleted? """
+
+        user = User.query.filter_by(username="TESTUSERNAME").first()
+        deleted_user_id = user.id
+        db.session.delete(user)
+        db.session.commit()
+
+        self.assertEqual(Message
+                         .query
+                         .filter_by(user_id=deleted_user_id)
+                         .first(), None)
+
+
+
