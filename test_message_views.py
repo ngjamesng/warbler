@@ -81,3 +81,4 @@ class MessageViewTestCase(TestCase):
             msg = Message.query.one()
             self.assertEqual(msg.text, "Hello")
 
+    def test_remove_message(self):
