@@ -27,6 +27,13 @@ button.like {
   cursor: pointer;
 }
 
+/* this is for the unauthorized adding of msgs */
+
+.alert {
+  z-index: 10000;
+  position: absolute
+}
+
 /* ======================= Nav */
 
 .navbar {

@@ -54,9 +54,9 @@ class MessageViewTestCase(TestCase):
                                     image_url=None)
 
         self.testuser2 = User.signup(username="testuser2",
-                                    email="test2@test.com",
-                                    password="testuser",
-                                    image_url=None)
+                                     email="test2@test.com",
+                                     password="testuser",
+                                     image_url=None)
 
         db.session.commit()
 
@@ -95,7 +95,7 @@ class MessageViewTestCase(TestCase):
             c.post("/messages/new", data={"text": "Hello"})
             msg = Message.query.one()
 
-            resp = c.post(f"/messages/{msg.id}/delete", follow_redirects = True)
+            resp = c.post(f"/messages/{msg.id}/delete", follow_redirects=True)
 
             self.assertEqual(resp.status_code, 200)
             self.assertEqual(len(Message.query.all()), 0)
@@ -111,7 +111,7 @@ class MessageViewTestCase(TestCase):
                 sess[CURR_USER_KEY] = self.testuser2.id
 
             msg = Message.query.one()
-            resp = c.post(f"/messages/{msg.id}/delete", follow_redirects = True)
+            resp = c.post(f"/messages/{msg.id}/delete", follow_redirects=True)
             html = resp.get_data(as_text=True)
 
             self.assertEqual(resp.status_code, 200)
@@ -124,7 +124,7 @@ class MessageViewTestCase(TestCase):
         with self.client as c:
             resp = c.post("/messages/new",
                           data={"text": "Hello"},
-                          follow_redirects = True)
+                          follow_redirects=True)
             html = resp.get_data(as_text=True)
 
             self.assertEqual(resp.status_code, 200)
@@ -139,7 +139,7 @@ class MessageViewTestCase(TestCase):
 
         with self.client as c:
             msg = Message.query.one()
-            resp = c.post(f"/messages/{msg.id}/delete", follow_redirects = True)
+            resp = c.post(f"/messages/{msg.id}/delete", follow_redirects=True)
             html = resp.get_data(as_text=True)
 
             self.assertEqual(resp.status_code, 200)

@@ -81,33 +81,29 @@ class MessageModelTestCase(TestCase):
         self.assertIsInstance(m.user, User)
         self.assertIsInstance(m, Message)
 
-
     def test_message_too_long(self):
         """Do we get an error if our message is too long?"""
-        with self.client as client:
-            
-            user = User.query.filter_by(username="TESTUSERNAME").first()
 
-            with self.assertRaises(DataError):
-                m = Message(
-                    text= str("s"*150),
-                    user_id=user.id
-                )
-                db.session.add(m)
-                db.session.commit()
+        user = User.query.filter_by(username="TESTUSERNAME").first()
+
+        with self.assertRaises(DataError):
+            m = Message(
+                text= str("s"*150),
+                user_id=user.id
+            )
+            db.session.add(m)
+            db.session.commit()
 
     def test_message_invalid_user(self):
         """Do we get an error if a user doesn't exist? """
-        with self.client as client:
-
-            with self.assertRaises(IntegrityError):
-                m = Message(
-                    text="This is a test.",
-                    # user_id -1 will never be generated, thus invalid user
-                    user_id= -1
-                )
-                db.session.add(m)
-                db.session.commit()
+        with self.assertRaises(IntegrityError):
+            m = Message(
+                text="This is a test.",
+                # user_id -1 will never be generated, thus invalid user
+                user_id= -1
+            )
+            db.session.add(m)
+            db.session.commit()
 
     def test_message_del_on_cascade(self):
         """Does the message delete if the user is deleted? """

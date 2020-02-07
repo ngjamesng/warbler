@@ -43,8 +43,6 @@ class UserModelTestCase(TestCase):
         Message.query.delete()
         Follows.query.delete()
 
-        self.client = app.test_client()
-
         user = User(
             email="OURTEST@test.com",
             username="TESTUSERNAME",
@@ -91,6 +89,7 @@ class UserModelTestCase(TestCase):
         )
 
         user2 = User.query.filter_by(username="TESTUSERNAME").first()
+        self.assertEqual(user1.is_following(user2), False)
 
         user1.following.append(user2)
         db.session.add(user1)
@@ -109,6 +108,7 @@ class UserModelTestCase(TestCase):
         )
 
         user2 = User.query.filter_by(username="TESTUSERNAME").first()
+        self.assertEqual(user2.is_followed_by(user1), False)
 
         user1.following.append(user2)
         db.session.add(user1)
@@ -119,48 +119,43 @@ class UserModelTestCase(TestCase):
 
     def test_signup_success(self):
 
-        with self.client as client:
+        user = User.signup("user1", "user1@email.com", "password1", None)
+        db.session.commit()
 
-            user = User.signup("user1", "user1@email.com", "password1", None)
-            db.session.commit()
-
-            self.assertIsInstance(user, User)
+        self.assertIsInstance(user, User)
 
     def test_signup_duplicate_fail(self):
 
-        with self.client as client:
+        User.signup("user2", "user2@email.com", "password1", None)
 
-            user = User.signup("user2", "user2@email.com", "password1", None)
+        db.session.commit()
+
+        with self.assertRaises(IntegrityError) as context:
+            User.signup("user2", "user2@email.com", "password1", None)
             db.session.commit()
-
-            with self.assertRaises(IntegrityError) as context:
-                User.signup("user2", "user2@email.com", "password1", None)
-                db.session.commit()
-            self.assertTrue('duplicate key value violates unique constraint' in str(context.exception))
-            self.assertIn('duplicate key value violates unique constraint', str(context.exception))
+        self.assertTrue('duplicate key value violates unique constraint' in str(context.exception))
+        self.assertIn('duplicate key value violates unique constraint', str(context.exception))
 
     def test_authenticate_success(self):
 
-        with self.client as client:
-            user = User.signup("liz", "liz@liz.com", "password", None)
-            db.session.commit()
+        user = User.signup("liz", "liz@liz.com", "password", None)
+        db.session.commit()
 
-            test_auth = User.authenticate("liz", "password")
+        test_auth = User.authenticate("liz", "password")
 
-            self.assertIsInstance(test_auth, User)
+        self.assertIsInstance(test_auth, User)
 
     def test_authenticate_fail(self):
 
-        with self.client as client:
-            user = User.signup("liz", "liz@liz.com", "password", None)
-            db.session.commit()
+        User.signup("liz", "liz@liz.com", "password", None)
+        db.session.commit()
 
-            test_auth = User.authenticate("james", "password")
-            test_auth2 = User.authenticate("liz", "password1")
+        test_auth = User.authenticate("james", "password")
+        test_auth2 = User.authenticate("liz", "password1")
 
-            self.assertEqual(test_auth, False)
-            self.assertNotIsInstance(test_auth, User)
-            self.assertEqual(test_auth2, False)
-            self.assertNotIsInstance(test_auth2, User)
+        self.assertEqual(test_auth, False)
+        self.assertNotIsInstance(test_auth, User)
+        self.assertEqual(test_auth2, False)
+        self.assertNotIsInstance(test_auth2, User)
 
 
