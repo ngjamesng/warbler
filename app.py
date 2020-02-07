@@ -311,45 +311,13 @@ def messages_destroy(message_id):
     return redirect(f"/users/{g.user.id}")
 
 
-# @app.route('/messages/<int:message_id>/like', methods=['POST'])
-# def messages_like(message_id):
-#     """Like a message"""
-
-#     if not g.user:
-#         flash("Please log in if you want to like this message", "danger")
-#         return redirect(request.referrer)
-
-#     # TODO check if like owner == g.user
-#     liked_msg = Message.query.get_or_404(message_id)
-#     g.user.likes.append(liked_msg)
-#     db.session.commit()
-
-#     return redirect(request.referrer)
-
-
-# @app.route('/messages/<int:message_id>/unlike', methods=['POST'])
-# def messages_unlike(message_id):
-#     """Unlike a message"""
-
-#     if not g.user:
-#         flash("Access unauthorized.", "danger")
-#         return redirect("/")
-
-#     # TODO check if msg owner == g.user
-#     liked_msg = Message.query.get_or_404(message_id)
-#     g.user.likes.remove(liked_msg)
-#     db.session.commit()
-
-#     return redirect(request.referrer)
-
-
 @app.route('/messages/<int:message_id>/handle-like', methods=["POST"])
 def handle_like(message_id):
     """handle likes on a message"""
 
     if not g.user:
-        flash("Access unauthorized.", "danger")
-        return redirect("/")
+        flash("You must be logged in to like/unlike.", "danger")
+        return redirect(request.referrer)
 
     liked_msg = Message.query.get_or_404(message_id)
 
