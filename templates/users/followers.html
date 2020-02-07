@@ -18,16 +18,15 @@
                   <p>@{{ follower.username }}</p>
                 </a>
 
-                {% if g.user.is_following(follower) %}
-                  <form method="POST"
-                        action="/users/stop-following/{{ follower.id }}">
+                <!-- {% if g.user.is_following(follower) %} -->
+                <form action="#" data-user-id="{{ follower.id }}" class="follow">
+                  {% if g.user.is_follower(follower) %}
                     <button class="btn btn-primary btn-sm">Unfollow</button>
-                  </form>
-                {% else %}
-                  <form method="POST" action="/users/follow/{{ follower.id }}">
+                  {% else %}
                     <button class="btn btn-outline-primary btn-sm">Follow</button>
-                  </form>
-                {% endif %}
+                  {% endif %}
+                </form>
+                <!-- {% endif %} -->
 
               </div>
               <p class="card-bio">{{ follower.bio }}</p>

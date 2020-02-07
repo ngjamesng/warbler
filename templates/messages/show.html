@@ -19,16 +19,15 @@
                         action="/messages/{{ message.id }}/delete">
                     <button class="btn btn-outline-danger">Delete</button>
                   </form>
-                {% elif g.user.is_following(message.user) %}
-                  <form method="POST"
-                        action="/users/stop-following/{{ message.user.id }}">
-                    <button class="btn btn-primary">Unfollow</button>
+                  {% elif g.user.is_following(message.user) %}
+                  <form action="#" data-user-id="{{ message.user.id }}" class="follow">
+                    <button class="btn btn-primary btn-sm">Unfollow</button>
                   </form>
-                {% else %}
-                  <form method="POST" action="/users/follow/{{ message.user.id }}">
+                  {% else %}
+                  <form action="#" data-user-id="{{ message.user.id }}" class="follow">
                     <button class="btn btn-outline-primary btn-sm">Follow</button>
                   </form>
-                {% endif %}
+                    {% endif %}
               {% endif %}
             </div>
             <p class="single-message">{{ message.text }}</p>
@@ -37,13 +36,15 @@
             {% if g.user.id != message.user.id %}
             <p>
               {% if not g.user or not g.user.has_liked(message) %}
-              <form method="POST" action="/messages/{{ message.id }}/like">
+  
+              <form method="#" class="like-form" data-message-id="{{ message.id }}">
                 <button class="like"><i class="far fa-star"></i></button>
               </form>
               {% else %}
-              <form method="POST" action="/messages/{{ message.id }}/unlike">
+              <form method="#" class="like-form" data-message-id="{{ message.id }}">
                 <button class="like"><i class="fas fa-star"></i></button>
               </form>
+
               {% endif %}
             </p>
             {% endif %}

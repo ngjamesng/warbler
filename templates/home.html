@@ -51,13 +51,14 @@
           {% if g.user.id != msg.user.id %}
           <p>
             {% if g.user.has_liked(msg) %}
-            <form method="POST" action="/messages/{{ msg.id }}/unlike">
+            <form method="#" class="like-form" data-message-id="{{ msg.id }}">
               <button class="like"><i class="fas fa-star"></i></button>
             </form>
             {% else %}
-            <form method="POST" action="/messages/{{ msg.id }}/like">
+            <form method="#" class="like-form" data-message-id="{{ msg.id }}">
               <button class="like"><i class="far fa-star"></i></button>
             </form>
+
             {% endif %}
           </p>
           {% endif %}

@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, render_template, request, flash, redirect, session, g
+from flask import Flask, render_template, request, flash, redirect, session, g, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
@@ -191,34 +191,28 @@ def users_followers(user_id):
     return render_template('users/followers.html', user=user)
 
 
-@app.route('/users/follow/<int:follow_id>', methods=['POST'])
-def add_follow(follow_id):
-    """Add a follow for the currently-logged-in user."""
+@app.route('/users/handlefollow/<int:follow_id>', methods=["POST"])
+def toggle_follow(follow_id):
+    """toggle follow"""
 
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
     followed_user = User.query.get_or_404(follow_id)
-    g.user.following.append(followed_user)
-    db.session.commit()
 
-    return redirect(f"/users/{g.user.id}/following")
-
-
-@app.route('/users/stop-following/<int:follow_id>', methods=['POST'])
-def stop_following(follow_id):
-    """Have currently-logged-in-user stop following this user."""
-
-    if not g.user:
-        flash("Access unauthorized.", "danger")
-        return redirect("/")
-
-    followed_user = User.query.get_or_404(follow_id)
-    g.user.following.remove(followed_user)
-    db.session.commit()
-
-    return redirect(f"/users/{g.user.id}/following")
+    if g.user.is_following(followed_user):
+        g.user.following.remove(followed_user)
+        db.session.commit()
+        follow_count = len(g.user.following)
+        unfollow_html = '<button class="btn btn-outline-primary btn-sm">Follow</button>'
+        return jsonify(html=unfollow_html, follow_count=follow_count)
+    else:
+        g.user.following.append(followed_user)
+        db.session.commit()
+        follow_count = len(g.user.following)
+        follow_html = '<button class="btn btn-primary btn-sm">Unfollow</button>'
+        return jsonify(html=follow_html, follow_count=follow_count)
 
 
 @app.route('/users/profile', methods=["GET", "POST"])
@@ -317,36 +311,58 @@ def messages_destroy(message_id):
     return redirect(f"/users/{g.user.id}")
 
 
-@app.route('/messages/<int:message_id>/like', methods=['POST'])
-def messages_like(message_id):
-    """Like a message"""
+# @app.route('/messages/<int:message_id>/like', methods=['POST'])
+# def messages_like(message_id):
+#     """Like a message"""
 
-    if not g.user:
-        flash("Please log in if you want to like this message", "danger")
-        return redirect(request.referrer)
+#     if not g.user:
+#         flash("Please log in if you want to like this message", "danger")
+#         return redirect(request.referrer)
 
-    # TODO check if like owner == g.user
-    liked_msg = Message.query.get_or_404(message_id)
-    g.user.likes.append(liked_msg)
-    db.session.commit()
+#     # TODO check if like owner == g.user
+#     liked_msg = Message.query.get_or_404(message_id)
+#     g.user.likes.append(liked_msg)
+#     db.session.commit()
 
-    return redirect(request.referrer)
+#     return redirect(request.referrer)
 
 
-@app.route('/messages/<int:message_id>/unlike', methods=['POST'])
-def messages_unlike(message_id):
-    """Unlike a message"""
+# @app.route('/messages/<int:message_id>/unlike', methods=['POST'])
+# def messages_unlike(message_id):
+#     """Unlike a message"""
+
+#     if not g.user:
+#         flash("Access unauthorized.", "danger")
+#         return redirect("/")
+
+#     # TODO check if msg owner == g.user
+#     liked_msg = Message.query.get_or_404(message_id)
+#     g.user.likes.remove(liked_msg)
+#     db.session.commit()
+
+#     return redirect(request.referrer)
+
+
+@app.route('/messages/<int:message_id>/handle-like', methods=["POST"])
+def handle_like(message_id):
+    """handle likes on a message"""
 
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
-    # TODO check if msg owner == g.user
     liked_msg = Message.query.get_or_404(message_id)
-    g.user.likes.remove(liked_msg)
-    db.session.commit()
 
-    return redirect(request.referrer)
+    if g.user.has_liked(liked_msg):
+        g.user.likes.remove(liked_msg)
+        db.session.commit()
+        like_count = len(g.user.likes)
+    else:
+        g.user.likes.append(liked_msg)
+        db.session.commit()
+        like_count = len(g.user.likes)
+
+    return jsonify(count=like_count)
 
 
 ##############################################################################
@@ -394,3 +410,13 @@ def add_header(req):
     req.headers["Expires"] = "0"
     req.headers['Cache-Control'] = 'public, max-age=0'
     return req
+
+
+#############################################################################
+# 404 page
+
+@app.errorhandler(404)
+def page_not_found(e):
+    """catchall for 404"""
+
+    return render_template("/errors/404.html"), 404

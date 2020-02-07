@@ -20,11 +20,11 @@
             {% if g.user.id != message.user.id %}
             <p>
               {% if not g.user or not g.user.has_liked(message) %}
-              <form method="POST" action="/messages/{{ message.id }}/like">
+              <form method="#" class="like-form" data-message-id="{{ message.id }}">
                 <button class="like"><i class="far fa-star"></i></button>
               </form>
               {% else %}
-              <form method="POST" action="/messages/{{ message.id }}/unlike">
+              <form method="#" class="like-form" data-message-id="{{ message.id }}">
                 <button class="like"><i class="fas fa-star"></i></button>
               </form>
               {% endif %}

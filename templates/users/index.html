@@ -22,17 +22,13 @@
                     </a>
 
                     {% if g.user %}
+                    <form action="#" data-user-id="{{ user.id }}" class="follow">
                       {% if g.user.is_following(user) %}
-                        <form method="POST"
-                              action="/users/stop-following/{{ user.id }}">
-                          <button class="btn btn-primary btn-sm">Unfollow</button>
-                        </form>
+                        <button class="btn btn-primary btn-sm">Unfollow</button>
                       {% else %}
-                        <form method="POST"
-                              action="/users/follow/{{ user.id }}">
-                          <button class="btn btn-outline-primary btn-sm">Follow</button>
-                        </form>
+                        <button class="btn btn-outline-primary btn-sm">Follow</button>
                       {% endif %}
+                    </form>
                     {% endif %}
 
                   </div>

@@ -16,17 +16,13 @@
                   <img src="{{ followed_user.image_url }}" alt="Image for {{ followed_user.username }}" class="card-image">
                   <p>@{{ followed_user.username }}</p>
                 </a>
-                {% if g.user.is_following(followed_user) %}
-                  <form method="POST"
-                        action="/users/stop-following/{{ followed_user.id }}">
+                <form action="#" data-user-id="{{ followed_user.id }}" class="follow">
+                  {% if g.user.is_following(followed_user) %}
                     <button class="btn btn-primary btn-sm">Unfollow</button>
-                  </form>
-                {% else %}
-                  <form method="POST" action="/users/follow/{{ followed_user.id }}">
+                  {% else %}
                     <button class="btn btn-outline-primary btn-sm">Follow</button>
-                  </form>
-                {% endif %}
-
+                  {% endif %}
+                </form>
               </div>
               <p class="card-bio">{{ followed_user.bio }}</p>
             </div>
