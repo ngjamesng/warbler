@@ -205,14 +205,22 @@ def toggle_follow(follow_id):
         g.user.following.remove(followed_user)
         db.session.commit()
         follow_count = len(g.user.following)
+        follower_count = len(followed_user.followers)
         unfollow_html = '<button class="btn btn-outline-primary btn-sm">Follow</button>'
-        return jsonify(html=unfollow_html, follow_count=follow_count)
+        return jsonify(html=unfollow_html,
+                       follow_count=follow_count,
+                       follower_count=follower_count
+                       )
     else:
         g.user.following.append(followed_user)
         db.session.commit()
         follow_count = len(g.user.following)
+        follower_count = len(followed_user.followers)
         follow_html = '<button class="btn btn-primary btn-sm">Unfollow</button>'
-        return jsonify(html=follow_html, follow_count=follow_count)
+        return jsonify(html=follow_html,
+                       follow_count=follow_count,
+                       follower_count=follower_count
+                       )
 
 
 @app.route('/users/profile', methods=["GET", "POST"])
