@@ -338,7 +338,10 @@ def handle_like(message_id):
         db.session.commit()
         like_count = len(g.user.likes)
 
-    return jsonify(count=like_count)
+
+    return (jsonify(count=like_count)
+            if (f'/users/{g.user.id}/' in request.referrer)
+            else jsonify(success=True))
 
 
 ##############################################################################
